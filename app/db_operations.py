@@ -2,7 +2,7 @@ from models import *
 from sqlalchemy.orm import Session
 
 
-def add_data(table_name, data_obj):
+def add_data(data_obj):
     with Session(engine) as session:
         session.begin()
         try:
@@ -27,20 +27,20 @@ def get_data(table_name, filter_key=None, filter_value=None):
     return data
 
 
-def update_data(table_name, data_object, filter_value):
+def update_data(table_name, data_object, id_value):
     with Session(engine) as session:
         try:
-            session.query(table_name).filter_by(id=filter_value).update(data_object)
+            session.query(table_name).filter_by(id=id_value).update(data_object)
             session.commit()
         except Exception as e:
             print(e)
 
 
-def delete_data(table_name, filter_value):
+def delete_data(table_name, id_value):
     with Session(engine) as session:
         session.begin()
         try:
-            session.query(table_name).filter_by(id=filter_value).delete()
+            session.query(table_name).filter_by(id=id_value).delete()
             session.commit()
         except Exception as e:
             session.rollback()
