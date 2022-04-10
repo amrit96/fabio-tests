@@ -44,15 +44,15 @@ def delete_data(table_name,filter_value):
             session.rollback()
             raise
 
-if __name__ == "__main__":
-    from models import Continent, Country, City
-    data = get_data(table_name=Continent)
-    # data[0]['population'] = 1001
-    # update_data(table_name=Continent, data_object={Continent.population: 2001}, filter_value=1)
-    # data = get_data(table_name=Continent)
-    data2 = Continent(name='North America', population=2, area=102.5)
-    add_data(table_name=Continent, data_obj=data2)
-    data = get_data(table_name=Continent)
-    delete_data(Continent, filter_value=1)
-    data = get_data(table_name=Continent)
-    print(data)
+# if __name__ == "__main__":
+#     from models import Continent, Country, City
+#     data = get_data(table_name=Continent)
+#     # data[0]['population'] = 1001
+#     # update_data(table_name=Continent, data_object={Continent.population: 2001}, filter_value=1)
+#     # data = get_data(table_name=Continent)
+#     data2 = Continent(name='North America', population=2, area=102.5)
+#     add_data(table_name=Continent, data_obj=data2)
+#     data = get_data(table_name=Continent)
+#     delete_data(Continent, filter_value=1)
+#     data = get_data(table_name=Continent)
+#     print(data)
