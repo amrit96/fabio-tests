@@ -1,7 +1,9 @@
 from models import *
 from sqlalchemy.orm import Session
+from tasks import app
 
 
+@app.task
 def add_data(data_obj):
     with Session(engine) as session:
         session.begin()
@@ -15,6 +17,7 @@ def add_data(data_obj):
             session.commit()
 
 
+@app.task
 def get_data(table_name, filter_key=None, filter_value=None):
     with Session(engine) as session:
         if filter_key:
@@ -27,6 +30,7 @@ def get_data(table_name, filter_key=None, filter_value=None):
     return data
 
 
+@app.task
 def update_data(table_name, data_object, id_value):
     with Session(engine) as session:
         try:
@@ -36,6 +40,7 @@ def update_data(table_name, data_object, id_value):
             print(e)
 
 
+@app.task
 def delete_data(table_name, id_value):
     with Session(engine) as session:
         session.begin()

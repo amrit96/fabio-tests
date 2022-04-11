@@ -10,7 +10,7 @@ def add_continent(name, population, area):
     if region_validation == 'valid':
         try:
             continent = Continent(name=name, population=population, area=area)
-            add_data(continent)
+            add_data.delay(continent)
             result = "Success"
         except Exception as e:
             result = f"Failure: {str(e)}"
@@ -27,7 +27,7 @@ def add_country(name, population, area, continent_name, hospital_count=0, nation
         try:
             country = Country(name=name, population=population, area=area, hospital_count=hospital_count,
                               national_park=national_park, continent=continent_name)
-            add_data(country)
+            add_data.delay(country)
             result = "Success"
         except Exception as e:
             result = f"Failure: {str(e)}"
@@ -43,7 +43,7 @@ def add_city(name, population, area, country_name, road_count=0, tree_count=0):
         try:
             country = City(name=name, population=population, area=area, tree_count=tree_count, road_count=road_count,
                            continent=country_name)
-            add_data(country)
+            add_data.delay(country)
             result = "Success"
         except Exception as e:
             result = f"Failure: {str(e)}"
@@ -90,7 +90,7 @@ def update_region(region_type, region_id, property_name, property_value):
     if region_validation == 'valid':
         try:
             updated_data = {getattr(region_table[region_type], property_name): property_value}
-            update_data(table_name=region_table[region_type], data_object=updated_data, id_value=region_id)
+            update_data.delay(table_name=region_table[region_type], data_object=updated_data, id_value=region_id)
             result = "Success"
         except Exception as e:
             result = f"Failure: {str(e)}"
@@ -140,7 +140,7 @@ def remove_region(region_type, region_id):
     valid_region = validate_existing_region(region_type=region_type, region_id=region_id)
     if valid_region == 'valid':
         try:
-            delete_data(table_name=region_table[region_type], id_value=region_id)
+            delete_data.delay(table_name=region_table[region_type], id_value=region_id)
             result = "success"
         except Exception as e:
             result = f"Failed to remove {region_type}"
