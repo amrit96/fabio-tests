@@ -5,6 +5,16 @@ region_table = {'continent': Continent, 'country': Country, 'city': City}
 parent_region = {'continent': None, 'country': (Continent, 'continent'), 'city': (Country, 'country')}
 
 def add_continent(name, population, area):
+    """
+    this method will add continet with proper validation
+    Args:
+        name: name of continent
+        population: population of continent
+        area: area of the continent
+
+    Returns:
+        success/failure message
+    """
     region_validation = validate_region_for_add(region_type='continent', entry_region=name, entry_area=area,
                                                 entry_population=population)
     if region_validation == 'valid':
@@ -19,14 +29,27 @@ def add_continent(name, population, area):
     return result
 
 
-def add_country(name, population, area, continent_name, hospital_count=0, national_park=0):
+def add_country(name, population, area, continent_id, hospital_count=0, national_park=0):
+    """
+    this method will be used to add a new country with proper validation
+    Args:
+        name: name of country
+        population: country's population
+        area: area of the country
+        continent_id: id of the continent of which the country is a part
+        hospital_count: number of hospitals in the country
+        national_park: number of national park in the country
+
+    Returns:
+         success/failure message
+    """
 
     region_validation = validate_region_for_add(region_type='country', entry_region=name, entry_area=area,
-                                                entry_population=population, parent_region_name=continent_name)
+                                                entry_population=population, parent_region_name=continent_id)
     if region_validation == 'valid':
         try:
             country = Country(name=name, population=population, area=area, hospital_count=hospital_count,
-                              national_park=national_park, continent=continent_name)
+                              national_park=national_park, continent=continent_id)
             add_data.delay(country)
             result = "Success"
         except Exception as e:
@@ -36,13 +59,26 @@ def add_country(name, population, area, continent_name, hospital_count=0, nation
     return result
 
 
-def add_city(name, population, area, country_name, road_count=0, tree_count=0):
+def add_city(name, population, area, country_id, road_count=0, tree_count=0):
+    """
+    this method will be used to add new cities with proper basic validation
+    Args:
+        name: name of the city
+        population: city's population
+        area: area of the city
+        country_id: id of the country of which this city is a part of
+        road_count: number of roads in the city
+        tree_count: number of trees in the city
+
+    Returns:
+         success/failure message
+    """
     region_validation = validate_region_for_add(region_type='city', entry_region=name, entry_area=area,
-                                                entry_population=population, parent_region_name=country_name)
+                                                entry_population=population, parent_region_name=country_id)
     if region_validation == 'valid':
         try:
             country = City(name=name, population=population, area=area, tree_count=tree_count, road_count=road_count,
-                           continent=country_name)
+                           continent=country_id)
             add_data.delay(country)
             result = "Success"
         except Exception as e:
@@ -53,6 +89,18 @@ def add_city(name, population, area, country_name, road_count=0, tree_count=0):
 
 
 def validate_region_for_add(region_type, entry_region, entry_area, entry_population, parent_region_name=None):
+    """
+    this method will be used to conduct basic validation before addition of any region
+    Args:
+        region_type: type of region: continent/countruy/city
+        entry_region: name of the region
+        entry_area: size of the region
+        entry_population: region's population
+        parent_region_name: id of it's containing region(applicable for city and country only)
+
+    Returns:
+        valid / appropriate error message
+    """
 
     get_region = get_data(table_name=region_table[region_type], filter_key='name', filter_value=entry_region)
     if get_region:
@@ -85,6 +133,17 @@ def validate_region_for_add(region_type, entry_region, entry_area, entry_populat
 
 
 def update_region(region_type, region_id, property_name, property_value):
+    """
+    this method will be used to update existing data of any region
+    Args:
+        region_type: type of region: continent/countruy/city
+        region_id: id(primary_key) of the region
+        property_name: name of the property to be altered
+        property_value: updated value of the property
+
+    Returns:
+        success/failure messgae
+    """
     region_validation = validate_existing_region(region_type=region_type, region_id=region_id,
                                                  property_name=property_name, property_value=property_value)
     if region_validation == 'valid':
@@ -98,7 +157,19 @@ def update_region(region_type, region_id, property_name, property_value):
         result = region_validation
     return result
 
+
 def validate_existing_region(region_type, region_id, property_name=None, property_value=None):
+    """
+    this method will be used to validate any existing region before update or delete
+    Args:
+        region_type: type of region: continent/countruy/city
+        region_id: id(primary_key) of the region
+        property_name: name of the property to be altered
+        property_value: updated value of the property
+
+    Returns:
+        valid / appropriate error message
+    """
     get_region = get_data(table_name=region_table[region_type], filter_key='id', filter_value=region_id)
     shared_property = ['area', 'population']
     if not get_region:
@@ -128,6 +199,16 @@ def validate_existing_region(region_type, region_id, property_name=None, propert
 
 
 def get_region_details(region_type, filter_by=None, filter_value=None):
+    """
+    this method will be used to fetch region details (all/filtered)
+    Args:
+        region_type: type of region: continent/countruy/city
+        filter_by: name of the column against which the filtering is to be done
+        filter_value:  value of the filtering column
+
+    Returns:
+        a list of dictionary if data is present. else appropriate error message is returned
+    """
     try:
         result = get_data(table_name=region_table[region_type], filter_key=filter_by, filter_value=filter_value)
         if not result:
@@ -137,6 +218,15 @@ def get_region_details(region_type, filter_by=None, filter_value=None):
     return result
 
 def remove_region(region_type, region_id):
+    """
+    this method is used to remove any existion region from db
+    Args:
+        region_type: type of region: continent/countruy/city
+        region_id: id(primary_key) of the region
+
+    Returns:
+        success / appropriate error message
+    """
     valid_region = validate_existing_region(region_type=region_type, region_id=region_id)
     if valid_region == 'valid':
         try:
